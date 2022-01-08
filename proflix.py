@@ -1,15 +1,11 @@
-import re, requests, os
+import re, requests, os, shutil
 from sys import platform
 
 class Data:
     def __init__(self) -> None:
         self.cacheDir = ".torrentCache"
-        if platform.lower() == "windows":
-            os.system("rmdir -r .\{}\ ".format(self.cacheDir))
-            os.system("mkdir {}".format(self.cacheDir))
-        else:
-            os.system("rm -r {}".format(self.cacheDir))
-            os.system("mkdir {}".format(self.cacheDir))
+        shutil.rmtree(self.cacheDir, ignore_errors=True)
+        os.mkdir(self.cacheDir)
         self.__results = list()
         self.__urlPrefix = "https://"
         self.__header = {"User-Agent" : "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
@@ -63,16 +59,16 @@ class Data:
         self.__qsort(key, left, pivot-1)
         self.__qsort(key, pivot+1, right)
 
-    def printOptions(self) -> None:
+    def printOptions(self, numb : int) -> None:
         optionNumb = 1
         optionString = "({}) [{}] [{}] [S:{}] [L:{}] {}"
         for option in self.__results:
-            if optionNumb > 20 : break
+            if optionNumb > numb : break
             print(optionString.format(optionNumb, option[6], option[5], option[3], option[4], option[2]))
             optionNumb += 1
     
-    def chooseOption(self) -> None:
-        optionSize = min(len(self.__results), 20)
+    def chooseOption(self, numb : int) -> None:
+        optionSize = min(len(self.__results), numb)
         optionString = "Choose a torrent to watch[1-{}]:".format(optionSize)
         choice = -1
         while choice > optionSize or choice < 1:
@@ -115,7 +111,11 @@ def clearScreen() -> None:
     os.system('cls' if os.name=='nt' else 'clear')
 
 def main():
-    name = input("🧲Media to search:")
+    name = input("🧲Media to search: ")
+    optionsNumb = ''
+    while not optionsNumb.isnumeric():
+        optionsNumb = input("Max number of magnet links: ")
+    optionsNumb = int(optionsNumb)
     clearScreen()
     if not data.fetchInfo(name):
         choice = input("Want to continue?(Y/n)").lower()
@@ -125,10 +125,11 @@ def main():
             main()
         else:
             return
-    data.printOptions()
-    magnetLink = data.chooseOption()
+    data.printOptions(optionsNumb)
+    magnetLink = data.chooseOption(optionsNumb)
     os.system("notify-send \"🎥 Enjoy Watching ☺️ \" -i \"NONE\"")
     os.system("webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, data.cacheDir))
+    return
 
 if __name__ == "__main__":
     data = Data()
