@@ -14,6 +14,16 @@ class Data:
         self.__urlPrefix = "https://"
         self.__header = {"User-Agent" : "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
         self.__sitesInfo = {
+            "kickasstorrents.to" : {
+                "query" : "/usearch/{}/?sortby=seeders&sort=desc",
+                "name" : "<a.*class=\"cellMainLink\">(?:\r\n|\r|\n)(.+)</a>",
+                "link" : "<a href=\"(.+)\" class=\"cellMainLink\">",
+                "seeders" : "<td class=\"green center\">(?:\r\n|\r|\n| )(.+)</td>",
+                "leechers" : "<td class=\"red lasttd center\">(?:\r\n|\r|\n| )(.+)</td>",
+                "time" : "<td class=\"center\" title=\"(.+)<br/>(.+)\">",
+                "size" : "<td class=\"nobr center\">(?:\r\n|\r|\n| )(.+)</td>",
+                "magnet" : "<a class=\"kaGiantButton \".*href=\"(magnet:.+)\"><i class=\"ka ka-magnet\"></i></a>"
+            },
             "1337x.to" : {
                 "query" : "/sort-search/{}/seeders/desc/1/",
                 "name" : "<a href=\"/torrent/\d+/(.+)/\">.*</a>",
@@ -29,15 +39,40 @@ class Data:
     def __getElementList(self, site : str, name : str, page : str) -> list():
         return re.findall(self.__sitesInfo[site][name], page)
 
+    def clearResults(self) -> None:
+        self.__results.clear()
+
+    def __partitioning(self, key : int, left : int, right : int) -> int:
+        pivot = self.__results[right][key]
+        i = left - 1
+        j = right
+        while i < j:
+            while i < j-1 and self.__results[i+1][key] >= pivot:
+                i += 1
+            while i < j-1 and self.__results[j-1][key] < pivot:
+                j -= 1
+            if i >= j-1 : break
+            self.__results[i+1], self.__results[j-1] = self.__results[j-1], self.__results[i+1]
+        self.__results[right], self.__results[i+1] = self.__results[i+1], self.__results[right]
+        return j
+
+    def __qsort(self, key : int, left : int, right : int) -> None:
+        if left > right:
+            return None
+        pivot = self.__partitioning(key, left, right)
+        self.__qsort(key, left, pivot-1)
+        self.__qsort(key, pivot+1, right)
+
     def printOptions(self) -> None:
         optionNumb = 1
         optionString = "({}) [{}] [{}] [S:{}] [L:{}] {}"
         for option in self.__results:
+            if optionNumb > 20 : break
             print(optionString.format(optionNumb, option[6], option[5], option[3], option[4], option[2]))
             optionNumb += 1
     
     def chooseOption(self) -> None:
-        optionSize = len(self.__results)
+        optionSize = min(len(self.__results), 20)
         optionString = "Choose a torrent to watch[1-{}]:".format(optionSize)
         choice = -1
         while choice > optionSize or choice < 1:
@@ -47,7 +82,7 @@ class Data:
         return magnetLink[1]
 
     def fetchInfo(self, name : str) -> bool:
-        name = name.replace(' ', '+')
+        name = name.replace(' ', '%20')
         for site in self.__sitesInfo:
             url = self.__urlPrefix + site + self.__sitesInfo[site]["query"].format(name)
             try:
@@ -65,8 +100,16 @@ class Data:
             dates = self.__getElementList(site, "time", page)
             sizes = self.__getElementList(site, "size", page)
             for cnt in range(len(names)):
-                self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], seeders[cnt], leechers[cnt], dates[cnt], sizes[cnt]])
-            return True
+                removeWords = ["<strong class=\"red\">", "</strong>"]
+                for word in removeWords:
+                    if word in names[cnt]:
+                        names[cnt] = names[cnt].replace(word, '')
+                names[cnt] = names[cnt].replace('-', ' ')
+                if type(dates[cnt]) is not str:
+                    dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
+                self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
+        self.__qsort(3, 0, len(self.__results)-1)
+        return True
 
 def clearScreen() -> None:
     os.system('cls' if os.name=='nt' else 'clear')
@@ -77,8 +120,8 @@ def main():
     if not data.fetchInfo(name):
         choice = input("Want to continue?(Y/n)").lower()
         if choice == 'y' or choice == '':
-            data.results.clear()
-            Data.clearScreen()
+            data.clearResults
+            clearScreen()
             main()
         else:
             return
@@ -91,16 +134,3 @@ if __name__ == "__main__":
     data = Data()
     clearScreen()
     main()
-
-#"torrentgalaxy.to" : {
-#                "query" : "/torrents.php?search={}&lang=0&nox=2&sort=seeders&order=desc",
-#                "name" : "<.*a.*class.*=.*\".*txlight.*\".*title.*=.*\"(.+)\".*href.*=.*\".*\".*>.*<.*/.*a.*>",
-#                "link" : "<.*a.*class.*=.*\".*txlight.*\".*title.*=.*\".+\".*href.*=.*\"(.+)\".*>.*<.*/.*a.*>",
-#                "seeders" : "<.*span.*title.*=.*\".*Seeders.*/.*Leechers.*\".*>.*<.*font.*color.*=.*\".*green.*\">.*<.*b.*>(.+)<.*b.*>.*<.*/.*font.*>",
-#                "leechers" : "<.*span.*title.*=.*\".*Seeders.*/.*Leechers.*\".*>.*<.*font.*color.*=.*\".*#ff0000.*\">.*<.*b.*>(.+)<.*b.*>.*<.*/.*font.*>",
-#                "time" : "<.*div.*class.*=.*\".*tgxtablecell.*collapsehide.*rounded.*txlight.*\".*style.*=.*\".*text-align.*:.*right.*\".*>.*<.*small.*>(.+)<.*/.*small.*>.*<.*/.*div.*>",
-#                "size" : "<.*span.*class.*=.*\".*badge.*badge-secondary.*txlight\".*style.*=.*\".*border-radius.*:.*4px.*;.*\".*>(.+)<.*/.*span.*>"
-#            } 
-#"rarbg.to" : {
-#   "query" : "/search/1/?search={}&order=seeders&by=DESC"
-# }
