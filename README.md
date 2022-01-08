@@ -18,3 +18,5 @@ Just go in Proflix directory and run the python script:
 ```sh
 $ python3 proflix.py
 ```
+## License
+Project licensed under [GNU GPL3 License](https://www.gnu.org/licenses/gpl-3.0.html).
