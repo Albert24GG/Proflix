@@ -103,6 +103,8 @@ def clearScreen() -> None:
 
 
 def main() -> None:
+    data = Data()
+    clearScreen()
     name = input("🧲Media to search: ")
     optionsNumb = ''
     while not optionsNumb.isnumeric():
@@ -124,6 +126,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    data = Data()
-    clearScreen()
     main()
