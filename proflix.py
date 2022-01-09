@@ -8,8 +8,8 @@ from sys import platform
 class TorrentFinder:
     def __init__(self) -> None:
         self.cacheDir = ".torrentCache"
-        shutil.rmtree(self.cacheDir, ignore_errors=True)
-        os.mkdir(self.cacheDir)
+        if not os.path.exists(self.cacheDir):
+            os.mkdir(self.cacheDir)
         self.__results = list()
         self.__urlPrefix = "https://"
         self.__header = {
@@ -97,6 +97,9 @@ class TorrentFinder:
         self.__results.sort(key=lambda res: res[3], reverse=True)
         return True
 
+    def cleanup(self) -> None:
+        shutil.rmtree(self.cacheDir, ignore_errors=True)
+
 
 def clearScreen() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -123,6 +126,7 @@ def main() -> None:
     magnetLink = finder.chooseOption(optionsNumb)
     os.system(
         "webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, finder.cacheDir))
+    finder.cleanup()
 
 
 if __name__ == "__main__":
