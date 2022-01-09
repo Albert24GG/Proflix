@@ -38,27 +38,6 @@ class Data:
     def clearResults(self) -> None:
         self.__results.clear()
 
-    def __partitioning(self, key : int, left : int, right : int) -> int:
-        pivot = self.__results[right][key]
-        i = left - 1
-        j = right
-        while i < j:
-            while i < j-1 and self.__results[i+1][key] >= pivot:
-                i += 1
-            while i < j-1 and self.__results[j-1][key] < pivot:
-                j -= 1
-            if i >= j-1 : break
-            self.__results[i+1], self.__results[j-1] = self.__results[j-1], self.__results[i+1]
-        self.__results[right], self.__results[i+1] = self.__results[i+1], self.__results[right]
-        return j
-
-    def __qsort(self, key : int, left : int, right : int) -> None:
-        if left > right:
-            return None
-        pivot = self.__partitioning(key, left, right)
-        self.__qsort(key, left, pivot-1)
-        self.__qsort(key, pivot+1, right)
-
     def printOptions(self, numb : int) -> None:
         optionNumb = 1
         optionString = "({}) [{}] [{}] [S:{}] [L:{}] {}"
@@ -104,17 +83,17 @@ class Data:
                 if type(dates[cnt]) is not str:
                     dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
                 self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
-        self.__qsort(3, 0, len(self.__results)-1)
+        self.__results.sort(key = lambda res : res[3], reverse = True)
         return True
 
 def clearScreen() -> None:
     os.system('cls' if os.name=='nt' else 'clear')
 
-def main():
+def main() -> None:
     name = input("🧲Media to search: ")
     optionsNumb = ''
     while not optionsNumb.isnumeric():
-        optionsNumb = input("Max number of magnet links: ")
+        optionsNumb = input("Max number of results: ")
     optionsNumb = int(optionsNumb)
     clearScreen()
     if not data.fetchInfo(name):
