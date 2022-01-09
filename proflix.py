@@ -113,7 +113,7 @@ def sendNotification() -> None:
     notification = Notify()
     notification.title = "Proflix notification"
     notification.message = "🎥 Enjoy Watching ☺️"
-    notification.send()
+    notification.send(block=False)
 
 
 def main() -> None:
