@@ -106,7 +106,7 @@ class TorrentFinder:
 
 
 def clearScreen() -> None:
-    os.system('cls' if os.name == 'nt' else 'clear')
+    subprocess.call('cls' if os.name == 'nt' else 'clear')
 
 
 def sendNotification() -> None:
@@ -136,8 +136,8 @@ def main() -> None:
     finder.printOptions(optionsNumb)
     magnetLink = finder.chooseOption(optionsNumb)
     sendNotification()
-    os.system(
-        "webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, finder.cacheDir))
+    subprocess.call(
+        ["webtorrent", magnetLink, "-o", finder.cacheDir, "--mpv"])
     finder.cleanup()
 
 
