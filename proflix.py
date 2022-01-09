@@ -5,7 +5,7 @@ import shutil
 from sys import platform
 
 
-class Data:
+class TorrentFinder:
     def __init__(self) -> None:
         self.cacheDir = ".torrentCache"
         shutil.rmtree(self.cacheDir, ignore_errors=True)
@@ -103,7 +103,7 @@ def clearScreen() -> None:
 
 
 def main() -> None:
-    data = Data()
+    finder = TorrentFinder()
     clearScreen()
     name = input("🧲Media to search: ")
     optionsNumb = ''
@@ -111,18 +111,18 @@ def main() -> None:
         optionsNumb = input("Max number of results: ")
     optionsNumb = int(optionsNumb)
     clearScreen()
-    if not data.fetchInfo(name):
+    if not finder.fetchInfo(name):
         choice = input("Want to continue?(Y/n)").lower()
         if choice == 'y' or choice == '':
-            data.clearResults
+            finder.clearResults()
             clearScreen()
             main()
         else:
             return
-    data.printOptions(optionsNumb)
-    magnetLink = data.chooseOption(optionsNumb)
-    os.system("webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, data.cacheDir))
-    return
+    finder.printOptions(optionsNumb)
+    magnetLink = finder.chooseOption(optionsNumb)
+    os.system(
+        "webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, finder.cacheDir))
 
 
 if __name__ == "__main__":
