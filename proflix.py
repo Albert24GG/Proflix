@@ -46,7 +46,7 @@ class Data:
             print(optionString.format(optionNumb, option[6], option[5], option[3], option[4], option[2]))
             optionNumb += 1
     
-    def chooseOption(self, numb : int) -> None:
+    def chooseOption(self, numb : int) -> str:
         optionSize = min(len(self.__results), numb)
         optionString = "Choose a torrent to watch[1-{}]:".format(optionSize)
         choice = -1
