@@ -56,7 +56,7 @@ class TorrentFinder:
 
     def chooseOption(self, numb: int) -> str:
         optionSize = min(len(self.__results), numb)
-        optionString = "Choose a torrent to watch[1-{}]:".format(optionSize)
+        optionString = "Choose a torrent to watch [1-{}]: ".format(optionSize)
         choice = -1
         while choice > optionSize or choice < 1:
             choice = int(input(optionString))
@@ -119,14 +119,14 @@ def sendNotification() -> None:
 def main() -> None:
     finder = TorrentFinder()
     clearScreen()
-    name = input("🧲Media to search: ")
+    name = input("🧲 Media to search: ")
     optionsNumb = ''
     while not optionsNumb.isnumeric():
         optionsNumb = input("Max number of results: ")
     optionsNumb = int(optionsNumb)
     clearScreen()
     if not finder.fetchInfo(name):
-        choice = input("Want to continue?(Y/n)").lower()
+        choice = input("Want to continue? (Y/n): ").lower()
         if choice == 'y' or choice == '':
             finder.clearResults()
             clearScreen()
