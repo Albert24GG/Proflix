@@ -1,1 +1,2 @@
+notify-py==0.3.3
 requests==2.27.1

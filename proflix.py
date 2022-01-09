@@ -3,6 +3,7 @@ import requests
 import os
 import shutil
 from sys import platform
+from notifypy import Notify
 
 
 class TorrentFinder:
@@ -94,6 +95,9 @@ class TorrentFinder:
                     dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
                 self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(
                     seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
+        if not len(self.__results):
+            print("No magnet links found!")
+            return False
         self.__results.sort(key=lambda res: res[3], reverse=True)
         return True
 
@@ -103,6 +107,13 @@ class TorrentFinder:
 
 def clearScreen() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def sendNotification() -> None:
+    notification = Notify()
+    notification.title = "Proflix notification"
+    notification.message = "🎥 Enjoy Watching ☺️"
+    notification.send()
 
 
 def main() -> None:
@@ -124,6 +135,7 @@ def main() -> None:
             return
     finder.printOptions(optionsNumb)
     magnetLink = finder.chooseOption(optionsNumb)
+    sendNotification()
     os.system(
         "webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, finder.cacheDir))
     finder.cleanup()
