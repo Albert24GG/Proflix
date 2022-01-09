@@ -1,5 +1,6 @@
 import re, requests, os, shutil
 from sys import platform
+from notifypy import Notify
 
 class Data:
     def __init__(self) -> None:
@@ -66,9 +67,6 @@ class Data:
                 continue
             page = page.text
             names =  self.__getElementList(site, "name", page)
-            if not len(names):
-                print("No magnet links found!")
-                return False
             links = self.__getElementList(site, "link", page)
             seeders = self.__getElementList(site, "seeders", page)
             leechers = self.__getElementList(site, "leechers", page)
@@ -83,11 +81,20 @@ class Data:
                 if type(dates[cnt]) is not str:
                     dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
                 self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
+        if not len(self.__results):
+            print("No magnet links found!")
+            return False
         self.__results.sort(key = lambda res : res[3], reverse = True)
         return True
 
 def clearScreen() -> None:
     os.system('cls' if os.name=='nt' else 'clear')
+
+def sendNotification() -> None:
+    notification = Notify()
+    notification.title = "Proflix notification"
+    notification.message = "🎥 Enjoy Watching ☺️"
+    notification.send()
 
 def main() -> None:
     name = input("🧲Media to search: ")
@@ -106,6 +113,7 @@ def main() -> None:
             return
     data.printOptions(optionsNumb)
     magnetLink = data.chooseOption(optionsNumb)
+    sendNotification()
     os.system("webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, data.cacheDir))
     return
 
