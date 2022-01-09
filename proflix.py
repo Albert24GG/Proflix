@@ -106,7 +106,6 @@ def main() -> None:
             return
     data.printOptions(optionsNumb)
     magnetLink = data.chooseOption(optionsNumb)
-    os.system("notify-send \"🎥 Enjoy Watching ☺️ \" -i \"NONE\"")
     os.system("webtorrent \"{}\" -o \"{}\" --mpv".format(magnetLink, data.cacheDir))
     return
 
