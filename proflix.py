@@ -111,6 +111,8 @@ def clearScreen() -> None:
 
 def sendNotification() -> None:
     notification = Notify()
+    if os.path.isfile("./proflix.png"):
+        notification.icon = "./proflix.png"
     notification.title = "Proflix notification"
     notification.message = "🎥 Enjoy Watching ☺️"
     notification.send(block=False)
