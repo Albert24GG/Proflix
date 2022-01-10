@@ -1,4 +1,11 @@
-# Proflix
+<h1 align="center">
+  <br>
+    <img src="./proflix.png" alt="Proflix" width="200">
+  <br>
+  Proflix
+  <br>
+  <br>
+</h1>
 
 ## What is this?
 
