@@ -2,6 +2,7 @@ import re
 import requests
 import os
 import shutil
+import subprocess
 from sys import platform
 from notifypy import Notify
 
@@ -78,8 +79,7 @@ class TorrentFinder:
             page = page.text
             names = self.__getElementList(site, "name", page)
             if not len(names):
-                print("No magnet links found!")
-                return False
+                continue
             links = self.__getElementList(site, "link", page)
             seeders = self.__getElementList(site, "seeders", page)
             leechers = self.__getElementList(site, "leechers", page)
