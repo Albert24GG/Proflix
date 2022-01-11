@@ -3,6 +3,8 @@ import requests
 import os
 import shutil
 import subprocess
+import tkinter
+from tkinter import filedialog
 from sys import platform
 from notifypy import Notify
 
@@ -117,6 +119,16 @@ def sendNotification() -> None:
     notification.message = "🎥 Enjoy Watching ☺️"
     notification.send(block=False)
 
+def selectSubFile() -> str:
+    subPath = filedialog.askopenfilename()
+    if type(subPath) is str and subPath != '':
+        return subPath
+    else:
+        choice = input("Did not specify any file. Do you want to try again?(Y/n): ").lower()
+        if choice == 'y' or choice == '':
+            return selectSubFile()
+        else:
+            return ''
 
 def main() -> None:
     finder = TorrentFinder()
@@ -137,9 +149,16 @@ def main() -> None:
             return
     finder.printOptions(optionsNumb)
     magnetLink = finder.chooseOption(optionsNumb)
+    shellCommand = ["webtorrent", magnetLink, "-o", finder.cacheDir, "--mpv"]
+    choice = input("Do you want to load any subtitles file?(Y/n): ").lower()
+    if choice == 'y' or choice == '':
+        tkinter.Tk().withdraw()
+        subPath = selectSubFile()    
+    if subPath != '':
+        shellCommand.append("-t")
+        shellCommand.append(subPath)
     sendNotification()
-    subprocess.call(
-        ["webtorrent", magnetLink, "-o", finder.cacheDir, "--mpv"])
+    subprocess.call(shellCommand)
     finder.cleanup()
 
 
