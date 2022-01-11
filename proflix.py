@@ -154,9 +154,9 @@ def main() -> None:
     if choice == 'y' or choice == '':
         tkinter.Tk().withdraw()
         subPath = selectSubFile()    
-    if subPath != '':
-        shellCommand.append("-t")
-        shellCommand.append(subPath)
+        if subPath != '':
+            shellCommand.append("-t")
+            shellCommand.append(subPath)
     sendNotification()
     subprocess.call(shellCommand)
     finder.cleanup()
