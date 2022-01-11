@@ -112,7 +112,7 @@ class TorrentFinder:
 
 
 def clearScreen() -> None:
-    subprocess.call('cls' if os.name == 'nt' else 'clear')
+    subprocess.call('cls' if os.name == 'nt' else 'clear', shell=True)
 
 
 def sendNotification() -> None:
@@ -153,16 +153,15 @@ def main() -> None:
             return
     finder.printOptions(optionsNumb)
     magnetLink = finder.chooseOption(optionsNumb)
-    shellCommand = ["webtorrent", magnetLink, "-o", finder.cacheDir, "--mpv"]
+    shellCommand = "webtorrent \"{}\" -o {} --mpv".format(magnetLink, finder.cacheDir)
     choice = input("Do you want to load any subtitles file?(Y/n): ").lower()
     if choice == 'y' or choice == '':
         tkinter.Tk().withdraw()
         subPath = selectSubFile()    
         if subPath != '':
-            shellCommand.append("-t")
-            shellCommand.append(subPath)
+            shellCommand += " -t {}".format(subPath)
     sendNotification()
-    subprocess.call(shellCommand)
+    subprocess.call(shellCommand, shell=True)
     finder.cleanup()
 
 
