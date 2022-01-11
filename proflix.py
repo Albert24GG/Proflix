@@ -62,7 +62,11 @@ class TorrentFinder:
         optionString = "Choose a torrent to watch [1-{}]: ".format(optionSize)
         choice = -1
         while choice > optionSize or choice < 1:
-            choice = int(input(optionString))
+            choice = input(optionString)
+            if choice.isnumeric():
+                choice = int(choice)
+            else: 
+                choice = -1
         magnetPage = requests.get(
             self.__results[choice-1][1], headers=self.__header)
         magnetLink = re.search(
