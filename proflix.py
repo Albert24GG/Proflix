@@ -139,7 +139,7 @@ def main() -> None:
     clearScreen()
     name = input("🧲 Media to search: ")
     optionsNumb = ''
-    while not optionsNumb.isnumeric():
+    while not optionsNumb.isnumeric() or int(optionsNumb) < 1:
         optionsNumb = input("Max number of results: ")
     optionsNumb = int(optionsNumb)
     clearScreen()
