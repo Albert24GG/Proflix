@@ -134,9 +134,42 @@ def selectSubFile() -> str:
         else:
             return ''
 
+def selectDir() -> str:
+    selectedDir = filedialog.askdirectory()
+    if type(selectedDir) is str and selectedDir != '':
+        return selectedDir
+    else:
+        choice = input("Did not specify any download directory. Do you want to try again?(Y/n): ").lower()
+        if choice == 'y' or choice == '':
+            return selectDir()
+        else:
+            return ''
+
+def chooseApp() -> str:
+    print("What do you want to do?\n  1) Download media\n  2) Stream media")
+    optionString = "Choose an option [1-2]: "
+    option  = -1
+    while option not in range(1,3):
+            option = input(optionString)
+            if option.isnumeric():
+                option = int(option)
+            else: 
+                option = -1
+    return option
+
 def main() -> None:
     finder = TorrentFinder()
     clearScreen()
+    appOption = chooseApp()
+    clearScreen()
+    if appOption == 1:
+        print("Select download directory:")
+        shellCommand = "webtorrent download \"{}\""
+        downloadDir = selectDir()
+        if len(downloadDir):
+            shellCommand += " -o {} "
+    else:
+        shellCommand = "webtorrent \"{}\" -o {} --mpv"
     name = input("🧲 Media to search: ")
     optionsNumb = ''
     while not optionsNumb.isnumeric() or int(optionsNumb) < 1:
@@ -153,14 +186,17 @@ def main() -> None:
             return
     finder.printOptions(optionsNumb)
     magnetLink = finder.chooseOption(optionsNumb)
-    shellCommand = "webtorrent \"{}\" -o {} --mpv".format(magnetLink, finder.cacheDir)
-    choice = input("Do you want to load any subtitles file?(Y/n): ").lower()
-    if choice == 'y' or choice == '':
-        tkinter.Tk().withdraw()
-        subPath = selectSubFile()    
-        if subPath != '':
-            shellCommand += " -t {}".format(subPath)
-    sendNotification()
+    if appOption == 1:
+        shellCommand = shellCommand.format(magnetLink, downloadDir)
+    else:
+        shellCommand = shellCommand.format(magnetLink, finder.cacheDir)
+        choice = input("Do you want to load any subtitles file?(Y/n): ").lower()
+        if choice == 'y' or choice == '':
+            tkinter.Tk().withdraw()
+            subPath = selectSubFile()    
+            if subPath != '':
+                shellCommand += " -t {}".format(subPath)
+        sendNotification()
     subprocess.call(shellCommand, shell=True)
     finder.cleanup()
 
