@@ -115,12 +115,12 @@ def clearScreen() -> None:
     subprocess.call('cls' if os.name == 'nt' else 'clear', shell=True)
 
 
-def sendNotification() -> None:
+def sendNotification(message: str) -> None:
     notification = Notify()
     if os.path.isfile("./proflix.png"):
         notification.icon = "./proflix.png"
     notification.title = "Proflix notification"
-    notification.message = "🎥 Enjoy Watching ☺️"
+    notification.message = message
     notification.send(block=False)
 
 def selectSubFile() -> str:
@@ -196,8 +196,12 @@ def main() -> None:
             subPath = selectSubFile()    
             if subPath != '':
                 shellCommand += " -t {}".format(subPath)
-        sendNotification()
+        sendNotification("🎥 Enjoy Watching ☺️")
     subprocess.call(shellCommand, shell=True)
+    
+    if appOption == 1:
+        sendNotification("Download complete!💯")
+
     finder.cleanup()
 
 
