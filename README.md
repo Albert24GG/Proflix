@@ -9,7 +9,7 @@
 
 ## What is this?
 
-Proflix is a cross-platform python tool that scrapes a list of torrent sites for magnet links and uses webtorrent to stream the media directly to mpv.
+Proflix is a cross-platform python tool that scrapes a list of torrent sites for magnet links and uses webtorrent to stream the media directly to mpv or to just download it.
 
 ## Dependencies
 
