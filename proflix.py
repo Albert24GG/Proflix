@@ -123,6 +123,7 @@ def sendNotification(message: str) -> None:
     notification.message = message
     notification.send(block=False)
 
+
 def selectSubFile() -> str:
     subPath = filedialog.askopenfilename()
     if type(subPath) is str and subPath != '':
@@ -133,6 +134,7 @@ def selectSubFile() -> str:
             return selectSubFile()
         else:
             return ''
+
 
 def selectDir() -> str:
     selectedDir = filedialog.askdirectory()
@@ -145,6 +147,7 @@ def selectDir() -> str:
         else:
             return ''
 
+
 def chooseApp() -> str:
     print("What do you want to do?\n  1) Download media\n  2) Stream media")
     optionString = "Choose an option [1-2]: "
@@ -156,6 +159,7 @@ def chooseApp() -> str:
             else: 
                 option = -1
     return option
+
 
 def main() -> None:
     finder = TorrentFinder()
