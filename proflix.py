@@ -59,7 +59,7 @@ class TorrentFinder:
         for site, regex in self.__sitesInfo.items():
             for query in regex["query"]:
                 url = self.__urlPrefix + site + \
-                    self.__sitesInfo[site]["query"][0].format(name)
+                    query.format(name)
                 try:
                     page = requests.get(url, headers=self.__header)
                 except:
@@ -83,6 +83,7 @@ class TorrentFinder:
                         dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
                     self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(
                         seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
+                break
         if not len(self.__results):
             print("No magnet links found!")
             return False
