@@ -30,11 +30,11 @@ class TorrentFinder:
 
     def printOptions(self, numb: int) -> None:
         optionNumb = 1
-        optionString = "({}) [{}] [{}] [S:{}] [L:{}] {}"
+        optionString = "({}) [{}] [{}] [{}] [S:{}] [L:{}] {}"
         for option in self.__results:
             if optionNumb > numb:
                 break
-            print(optionString.format(optionNumb,
+            print(optionString.format(optionNumb, option[0],
                   option[6], option[5], option[3], option[4], option[2]))
             optionNumb += 1
 
