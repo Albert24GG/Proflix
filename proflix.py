@@ -113,12 +113,13 @@ def sendNotification(message: str) -> None:
 
 
 def selectSubFileOrDir(option: bool) -> str:
+    message = "Did not specify any {}. Do you want to try again?(Y/n): "
     if option == False:
         path = filedialog.askopenfilename()
-        message = "Did not specify any file. Do you want to try again?(Y/n): "
+        message = message.format("file")
     else:
         path = filedialog.askdirectory()
-        message = "Did not specify any download directory. Do you want to try again?(Y/n): "
+        message = message.format("download directory")
     if type(path) is str and path != '':
         return path
     else:
