@@ -112,26 +112,19 @@ def sendNotification(message: str) -> None:
     notification.send(block=False)
 
 
-def selectSubFile() -> str:
-    subPath = filedialog.askopenfilename()
-    if type(subPath) is str and subPath != '':
-        return subPath
+def selectSubFileOrDir(option: bool) -> str:
+    if option == False:
+        path = filedialog.askopenfilename()
+        message = "Did not specify any file. Do you want to try again?(Y/n): "
     else:
-        choice = input("Did not specify any file. Do you want to try again?(Y/n): ").lower()
-        if choice == 'y' or choice == '':
-            return selectSubFile()
-        else:
-            return ''
-
-
-def selectDir() -> str:
-    selectedDir = filedialog.askdirectory()
-    if type(selectedDir) is str and selectedDir != '':
-        return selectedDir
+        path = filedialog.askdirectory()
+        message = "Did not specify any download directory. Do you want to try again?(Y/n): "
+    if type(path) is str and path != '':
+        return path
     else:
-        choice = input("Did not specify any download directory. Do you want to try again?(Y/n): ").lower()
+        choice = input(message).lower()
         if choice == 'y' or choice == '':
-            return selectDir()
+            return selectSubFileOrDir(option)
         else:
             return ''
 
@@ -150,14 +143,17 @@ def chooseApp() -> str:
 
 
 def main() -> None:
+    # create the TorrentFinder object
     finder = TorrentFinder()
     clearScreen()
+    # choose between download and stream
     appOption = chooseApp()
     clearScreen()
     if appOption == 1:
         print("Select download directory:")
         shellCommand = "webtorrent download \"{}\""
-        downloadDir = selectDir()
+        # select directory where media will be downloaded
+        downloadDir = selectSubFileOrDir(True)
         if len(downloadDir):
             shellCommand += " -o {} "
     else:
@@ -186,15 +182,16 @@ def main() -> None:
         choice = input("Do you want to load any subtitles file?(Y/n): ").lower()
         if choice == 'y' or choice == '':
             tkinter.Tk().withdraw()
-            subPath = selectSubFile()    
+            subPath = selectSubFileOrDir(False);    
             if subPath != '':
                 shellCommand += " -t {}".format(subPath)
         sendNotification("🎥 Enjoy Watching ☺️")
+    # execute the shell command
     subprocess.call(shellCommand, shell=True)
     
     if appOption == 1:
         sendNotification("Download complete!💯")
-
+    # clean the streamed media
     finder.cleanup()
 
 
