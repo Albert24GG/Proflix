@@ -12,6 +12,7 @@ from notifypy import Notify
 
 class TorrentFinder:
     def __init__(self) -> None:
+        # construct the class object
         self.cacheDir = ".torrentCache"
         if not os.path.exists(self.cacheDir):
             os.mkdir(self.cacheDir)
@@ -55,6 +56,7 @@ class TorrentFinder:
         return magnetLink[1]
 
     def fetchInfo(self, name: str) -> bool:
+        # replace all spaces with %20 for good compatibility with all links
         name = name.replace(' ', '%20')
         for site, regex in self.__sitesInfo.items():
             for query in regex["query"]:
@@ -65,6 +67,7 @@ class TorrentFinder:
                 except:
                     continue
                 page = page.text
+                # get the info needed from every page
                 names = self.__getElementList(site, "name", page)
                 if not len(names):
                     continue
@@ -81,12 +84,14 @@ class TorrentFinder:
                     names[cnt] = names[cnt].replace('-', ' ')
                     if type(dates[cnt]) is not str:
                         dates[cnt] = " ".join(x for x in dates[cnt]) + " ago"
+                    # append all info to the results array
                     self.__results.append([site, self.__urlPrefix + site + links[cnt], names[cnt], int(
                         seeders[cnt]), int(leechers[cnt]), dates[cnt], sizes[cnt]])
                 break
         if not len(self.__results):
             print("No magnet links found!")
             return False
+        # sort the results in descending order by the number of seeders
         self.__results.sort(key=lambda res: res[3], reverse=True)
         return True
 
@@ -163,6 +168,7 @@ def main() -> None:
         optionsNumb = input("Max number of results: ")
     optionsNumb = int(optionsNumb)
     clearScreen()
+    # choose what to do if no results are found 
     if not finder.fetchInfo(name):
         choice = input("Want to continue? (Y/n): ").lower()
         if choice == 'y' or choice == '':
