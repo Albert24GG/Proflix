@@ -186,7 +186,7 @@ def main() -> None:
             tkinter.Tk().withdraw()
             subPath = selectSubFileOrDir(False);    
             if subPath != '':
-                shellCommand += " -t {}".format(subPath)
+                shellCommand += " -t \"{}\"".format(subPath)
         sendNotification("🎥 Enjoy Watching ☺️")
     # execute the shell command
     subprocess.call(shellCommand, shell=True)
