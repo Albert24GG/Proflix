@@ -7,6 +7,7 @@ import tkinter
 import json
 from tkinter import filedialog
 from sys import platform
+from sys import exit
 from notifypy import Notify
 
 
@@ -194,7 +195,7 @@ def main() -> None:
         sendNotification("Download complete!💯")
     # clean the streamed media
     finder.cleanup()
-
+    exit()
 
 if __name__ == "__main__":
     main()
