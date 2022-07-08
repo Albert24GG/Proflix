@@ -159,7 +159,7 @@ def main() -> None:
         if len(downloadDir):
             shellCommand += " -o {} "
     else:
-        shellCommand = "webtorrent \"{}\" -o {} --mpv"
+        shellCommand = "webtorrent \"{}\" -o {} --mpv --not-on-top"
     name = input("🧲 Media to search: ")
     optionsNumb = ''
     while not optionsNumb.isnumeric() or int(optionsNumb) < 1:
